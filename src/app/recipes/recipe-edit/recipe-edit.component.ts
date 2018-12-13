@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Params } from '@angular/router';
 import { FormGroup, FormControl, FormArray, Validators } from '@angular/forms';
 import { RecipeService } from '../recipe.service';
+import { Recipe } from '../recipe.model';
+import { Ingredient } from 'src/app/shared/ingredient.model';
 
 @Component({
   selector: 'app-recipe-edit',
@@ -9,6 +11,7 @@ import { RecipeService } from '../recipe.service';
   styleUrls: ['./recipe-edit.component.css']
 })
 export class RecipeEditComponent implements OnInit {
+
   id: number;
   editMode = false;
   recipeForm: FormGroup;
@@ -24,6 +27,7 @@ export class RecipeEditComponent implements OnInit {
           this.initForm();
         }
       );
+
   }
 
   getControls() {
@@ -31,12 +35,46 @@ export class RecipeEditComponent implements OnInit {
   }
 
   onAddIngredient() {
+    this.editMode = true;
     (<FormArray>this.recipeForm.get('ingredients')).push(
       new FormGroup({
         'name': new FormControl(null, Validators.required),
         'amount': new FormControl(null, [Validators.required, Validators.pattern(/^[1-9]+[0-9]*$/)])
       })
     );
+  }
+
+  getRecipeFromForm(): Recipe {
+
+    return this.recipeForm.value;
+    // const recipe = new Recipe(
+    //   this.recipeForm.value['name'],
+    //   this.recipeForm.value['imagePath'],
+    //   this.recipeForm.value['description'],
+    //   this.recipeForm.value['ingredients']
+    // );
+    // return recipe;
+
+    // const ingredients = (<FormArray>this.recipeForm.get('ingredients')).controls;
+    // if (ingredients) {
+    //   for (let grp of ingredients) {
+    //     recipe.ingredients.push(new Ingredient(
+    //       grp.get('name').value,
+    //       grp.get('amount').value
+    //     ));
+    //   }
+    // }
+
+  }
+
+  onSubmit() {
+    console.log(this.getRecipeFromForm());
+    if (this.editMode) {
+      const recipe = this.getRecipeFromForm();
+      this.recipeService.updateRecipe(this.id, recipe);
+    } else {
+      this.recipeService.addRecipe(this.getRecipeFromForm());
+    }
   }
 
   private initForm() {
