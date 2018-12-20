@@ -1,8 +1,10 @@
 import { Injectable } from '@angular/core';
+import { Http, Headers, Response } from '@angular/http';
 import { Recipe } from './recipe.model';
 import { Ingredient } from '../shared/ingredient.model';
 import { ShoppingListService } from '../shopping-list/shopping-list.service';
-import { Subject } from 'rxjs';
+import { Subject, Observable } from 'rxjs';
+import 'rxjs/Rx';
 
 @Injectable()
 export class RecipeService {
@@ -27,7 +29,7 @@ export class RecipeService {
       ])
   ];
 
-  constructor(private slService: ShoppingListService) { }
+  constructor(private slService: ShoppingListService, private http: Http) { }
 
   getRecipes() {
     return this.recipes.slice();
@@ -39,6 +41,7 @@ export class RecipeService {
 
   addRecipe(recipe: Recipe) {
     this.recipes.push(recipe);
+
     this.recipesChanged.next(this.recipes.slice());
   }
 
@@ -46,6 +49,37 @@ export class RecipeService {
     this.recipes[index] = recipe;
     this.recipesChanged.next(this.recipes.slice());
   }
+
+  // saveRecipes() {
+  //   this.http.put("https://ng-recipe-book-jb.firebaseio.com/data.json", this.recipes)
+  //     .subscribe(
+  //       (response) => { console.log(response) },
+  //       (error) => { console.log(error) }
+  //     );
+  // }
+
+  setRecipes(recipes: Recipe[]) {
+    this.recipes = recipes;
+    this.recipesChanged.next(this.recipes.slice());
+  }
+
+  // getHttpRecipes() {
+  //   return this.http.get("https://ng-recipe-book-jb.firebaseio.com/data.json")
+  //     .map(
+  //       (response: Response) => {
+  //         const data = response.json();
+  //         return data;
+  //       }
+  //     )
+  //     .catch(
+  //       (error: Response) => {
+  //         console.log(error);
+  //         //Could write specific code here to create a more
+  //         //useful error message and return that
+  //         return Observable.throw('Something went wrong...');
+  //       }
+  //     );
+  // }
 
   deleteRecipe(index: number) {
     this.recipes.splice(index, 1);
