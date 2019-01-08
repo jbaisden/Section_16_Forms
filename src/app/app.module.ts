@@ -21,7 +21,7 @@ import { CoreModule } from './core/core.module';
     HttpModule,
     AuthModule,
     ShoppingListModule,
-    SharedModule,
+    // SharedModule,
     CoreModule
   ],
   bootstrap: [AppComponent]
